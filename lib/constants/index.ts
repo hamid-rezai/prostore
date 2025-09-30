@@ -14,9 +14,12 @@ export const signUpDefaultValues = {
 }
 
 export const shippingAddressDefaultValues = {
-  fullName: "John Doe",
-  streetAddress: "123 Main St",
-  city: "Anytown",
-  postalCode: "12345",
-  country: "Anycountry",
+  fullName: "",
+  streetAddress: "",
+  city: "",
+  postalCode: "",
+  country: "",
 }
+
+export const PAYMENT_METHODS = process.env.PAYMENT_METHODS ? process.env.PAYMENT_METHODS.split(",") : ["Paypal", "Stripe", "CashOnDelivery"];
+export const DEFAULT_PAYMENT_METHOD = process.env.DEFAULT_PAYMENT_METHOD || "Paypal"; 
