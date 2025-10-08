@@ -22,3 +22,14 @@ test("creates a paypal order" , async()=>{
 })
 
 // Test to capture payment with mock order
+test("simulate capturing a payment from an order" , async()=>{
+  const orderId = "100";
+
+  const mockCapturePayment = jest.spyOn(paypal,"capturePayment").mockResolvedValue({
+    status:"COMPLETED",
+
+  })
+  const captureResponse = await paypal.capturePayment(orderId);
+  expect(captureResponse).toHaveProperty("status","COMPLETED");
+  mockCapturePayment.mockRestore();
+})
