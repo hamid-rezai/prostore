@@ -358,6 +358,7 @@ export async function updateOrderToPaidCOD(orderId: string) {
   try {
     await updateOrderToPaid({ orderId });
     revalidatePath(`/order/${orderId}`);
+    return { success: true, message: "Order has been marked paid" };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
