@@ -18,6 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PlaceOrderForm from "./place-order-form";
+import { ShippingAddress } from "@/types";
 
 export const metadata: Metadata = {
   title: "Place Order",
@@ -130,8 +131,6 @@ const PlaceOrderPage = async () => {
           <PlaceOrderForm />
             </CardContent>
           </Card>
-        </div>
-        <div>
         </div>
       </div>
     </>
