@@ -61,12 +61,12 @@ const StripePayment = ({priceInCents , orderId,clientSecret}:{
     )
   }
 
-  return <Elements options={{clientSecret,
+  return (<Elements options={{clientSecret,
     appearance:{
       theme: theme==="dark" ? "night" : theme === "light" ? "stripe" : systemTheme === "light" ? "stripe" : "night"
     }}
     
-  } stripe={stripePromise}><StripeForm/></Elements>;
+  } stripe={stripePromise}><StripeForm/></Elements>)
 }
  
 export default StripePayment;
