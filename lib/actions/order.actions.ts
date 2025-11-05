@@ -8,44 +8,45 @@ import { getUserById } from "./user.actions";
 import { insertOrderSchema } from "../constants/validators";
 import { prisma } from "@/db/prisma";
 import { paypal } from "../paypal";
-import { CartItem, PaymentResult } from "@/types";
+import { CartItem, PaymentResult, ShippingAddress } from "@/types";
 import { revalidatePath } from "next/cache";
 import { PAGE_SIZE } from "../constants";
 import { Prisma } from "@prisma/client";
+import { sendPurchaseReceipt } from "@/email";
 
 // Create order and create the order items
 export async function createOrder() {
   try {
     const session = await auth();
-    if (!session) throw new Error('User is not authenticated');
+    if (!session) throw new Error("User is not authenticated");
 
     const cart = await getMyCart();
     const userId = session?.user?.id;
-    if (!userId) throw new Error('User not found');
+    if (!userId) throw new Error("User not found");
 
     const user = await getUserById(userId);
 
     if (!cart || cart.items.length === 0) {
       return {
         success: false,
-        message: 'Your cart is empty',
-        redirectTo: '/cart',
+        message: "Your cart is empty",
+        redirectTo: "/cart",
       };
     }
 
     if (!user.address) {
       return {
         success: false,
-        message: 'No shipping address',
-        redirectTo: '/shipping-address',
+        message: "No shipping address",
+        redirectTo: "/shipping-address",
       };
     }
 
     if (!user.paymentMethod) {
       return {
         success: false,
-        message: 'No payment method',
-        redirectTo: '/payment-method',
+        message: "No payment method",
+        redirectTo: "/payment-method",
       };
     }
 
@@ -89,11 +90,11 @@ export async function createOrder() {
       return insertedOrder.id;
     });
 
-    if (!insertedOrderId) throw new Error('Order not created');
+    if (!insertedOrderId) throw new Error("Order not created");
 
     return {
       success: true,
-      message: 'Order created',
+      message: "Order created",
       redirectTo: `/order/${insertedOrderId}`,
     };
   } catch (error) {
@@ -248,6 +249,14 @@ export async function updateOrderToPaid({
     },
   });
   if (!updatedOrder) throw new Error("Order not found");
+
+  sendPurchaseReceipt({
+    order: {
+      ...updatedOrder,
+      shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+      paymentResult: updatedOrder.paymentResult as PaymentResult,
+    },
+  });
 }
 
 // Get user's orders
@@ -330,21 +339,23 @@ export async function getAllOrders({
 }: {
   limit?: number;
   page: number;
-  query:string;
+  query: string;
 }) {
-
-  const queryFilter:Prisma.OrderWhereInput = query && query !== 'all' ? {
-    user:{
-      name:{
-        contains:query,
-        mode:'insensitive'
-      } as Prisma.StringFilter
-    }
-  } : {};
+  const queryFilter: Prisma.OrderWhereInput =
+    query && query !== "all"
+      ? {
+          user: {
+            name: {
+              contains: query,
+              mode: "insensitive",
+            } as Prisma.StringFilter,
+          },
+        }
+      : {};
 
   const data = await prisma.order.findMany({
-    where:{
-      ...queryFilter
+    where: {
+      ...queryFilter,
     },
     orderBy: { createdAt: "desc" },
     take: limit,

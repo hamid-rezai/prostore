@@ -35,9 +35,9 @@ const OrderDetailsTable = ({
   stripeClientSecret,
   isAdmin,
 }: {
-  order: Order;
+  order: Omit<Order, "paymentResult">;
   paypalClientId: string;
-  stripeClientSecret:string | null;
+  stripeClientSecret: string | null;
   isAdmin: boolean;
 }) => {
   const {
@@ -89,41 +89,45 @@ const OrderDetailsTable = ({
 
   const MarkAsPaidButton = () => {
     const [isPending, startTransition] = useTransition();
-    const {toast} = useToast();
-    return(
-      <Button type="button" disabled={isPending} onClick={()=>
-        startTransition(async()=>{
-          const res = await updateOrderToPaidCOD(order.id);
-          toast({
-            variant: res.success ? "default" : "destructive",
-            description: res.message,
+    const { toast } = useToast();
+    return (
+      <Button
+        type='button'
+        disabled={isPending}
+        onClick={() =>
+          startTransition(async () => {
+            const res = await updateOrderToPaidCOD(order.id);
+            toast({
+              variant: res.success ? "default" : "destructive",
+              description: res.message,
+            });
           })
-        })
-      }>
+        }>
         {isPending ? "processing..." : "Mark As Paid"}
-
       </Button>
-    )
-  }
+    );
+  };
 
   const MarkAsDeliveredButton = () => {
     const [isPending, startTransition] = useTransition();
-    const {toast} = useToast();
-    return(
-      <Button type="button" disabled={isPending} onClick={()=>
-        startTransition(async()=>{
-          const res = await deliverOrder(order.id);
-          toast({
-            variant: res.success ? "default" : "destructive",
-            description: res.message,
+    const { toast } = useToast();
+    return (
+      <Button
+        type='button'
+        disabled={isPending}
+        onClick={() =>
+          startTransition(async () => {
+            const res = await deliverOrder(order.id);
+            toast({
+              variant: res.success ? "default" : "destructive",
+              description: res.message,
+            });
           })
-        })
-      }>
+        }>
         {isPending ? "processing..." : "Mark As Delivered"}
-
       </Button>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -221,7 +225,7 @@ const OrderDetailsTable = ({
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
-              
+
               {/* PayPal Payment */}
               {!isPaid && paymentMethod === "Paypal" && (
                 <div>
@@ -235,20 +239,19 @@ const OrderDetailsTable = ({
                 </div>
               )}
               {/* Stripe Payment */}
-              {
-                !isPaid && paymentMethod === "Stripe" && stripeClientSecret && (
-                  <StripePayment priceInCents={Number(order.totalPrice) * 100}
+              {!isPaid && paymentMethod === "Stripe" && stripeClientSecret && (
+                <StripePayment
+                  priceInCents={Number(order.totalPrice) * 100}
                   orderId={order.id}
                   clientSecret={stripeClientSecret}
-                  />
-                )
-              }
+                />
+              )}
 
               {/* Cash On Delivery */}
-              {isAdmin && !isPaid && paymentMethod === 'CashOnDelivery' && (
-                <MarkAsPaidButton/>
+              {isAdmin && !isPaid && paymentMethod === "CashOnDelivery" && (
+                <MarkAsPaidButton />
               )}
-              {isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton/>}
+              {isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />}
             </CardContent>
           </Card>
         </div>

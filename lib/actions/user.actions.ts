@@ -16,6 +16,7 @@ import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { Prisma } from "@prisma/client";
+import { getMyCart } from "./cart.actions";
 
 //Sign in the user with credentials
 export async function signInWithCredentials(
@@ -42,6 +43,9 @@ export async function signInWithCredentials(
 }
 // Sign out the user
 export async function signOutUser() {
+  // get current users cart and delete it so it does not persist to next user
+  const currentCart = await getMyCart();
+  await prisma.cart.delete({ where: { id: currentCart?.id } });
   await signOut();
 }
 
@@ -167,20 +171,20 @@ export async function getAllUsers({
 }: {
   limit?: number;
   page: number;
-  query:string;
+  query: string;
 }) {
-
-  const queryFilter:Prisma.UserWhereInput = query && query !== 'all' ? {
-      
-        name:{
-          contains:query,
-          mode:'insensitive'
-        } as Prisma.StringFilter
-  
-    } : {};
+  const queryFilter: Prisma.UserWhereInput =
+    query && query !== "all"
+      ? {
+          name: {
+            contains: query,
+            mode: "insensitive",
+          } as Prisma.StringFilter,
+        }
+      : {};
 
   const data = await prisma.user.findMany({
-    where:{...queryFilter},
+    where: { ...queryFilter },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
@@ -208,20 +212,21 @@ export async function deleteUsers(id: string) {
 }
 
 // update a user
-export async function updateUser(user:z.infer<typeof updateUserSchema>){
-  try{
+export async function updateUser(user: z.infer<typeof updateUserSchema>) {
+  try {
     await prisma.user.update({
-      where:{id:user.id},
-      data:{
-        name:user.name,
-        role:user.role
-      }
-    })
-    revalidatePath("/admin/users")
-    return{
-      success:true,message:"User Updated Successfully!"
-    }
-  }catch(error){
-    return {success:false, message:formatError(error)}
+      where: { id: user.id },
+      data: {
+        name: user.name,
+        role: user.role,
+      },
+    });
+    revalidatePath("/admin/users");
+    return {
+      success: true,
+      message: "User Updated Successfully!",
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
   }
 }

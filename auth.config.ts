@@ -1,12 +1,10 @@
-import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import type { NextAuthConfig } from "next-auth";
 
-const edgeConfig: NextAuthConfig = {
+export const authConfig = {
   providers: [],                  // <-- satisfy the type system
-  session: { strategy: "jwt" },
   callbacks: {
-    authorized({ request, auth }: any) {
+    authorized({ request, auth }) {
       // Array of regex patterns of paths we want to protect
       const protectedPaths = [
         /\/shipping-address/,
@@ -45,6 +43,4 @@ const edgeConfig: NextAuthConfig = {
       }
     },
   },
-};
-
-export const { auth } = NextAuth(edgeConfig);
+}satisfies NextAuthConfig;
