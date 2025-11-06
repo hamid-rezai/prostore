@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import {SessionProvider} from "next-auth/react";
 import ProfileForm from "./profile-form";
 
-const metadata : Metadata={
+export const metadata : Metadata={
   title: "Customer Profile",
 }
 const Profile = async () => {
