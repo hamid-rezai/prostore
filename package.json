@@ -56,6 +56,9 @@
     "ws": "^8.18.3",
     "zod": "^3.25.76"
   },
+  "overrides": {
+    "@auth/core":"0.38.0"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@prisma/client": "^6.5.0",
