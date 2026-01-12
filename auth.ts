@@ -6,7 +6,7 @@ import { compareSync } from "bcrypt-ts-edge";
 import { authConfig } from "./auth.config";
 import { cookies } from "next/headers";
 
-export const {handlers,auth,signIn,signOut} =NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/sign-in",
     error: "/sign-in",
