@@ -75,6 +75,10 @@ const OrderDetailsTable = ({
         variant: "destructive",
         description: res.message,
       });
+      throw new Error(res.message);
+    }
+    if (!res.data) {
+      throw new Error("Failed to create Paypal order");
     }
     return res.data;
   };
