@@ -233,13 +233,21 @@ const OrderDetailsTable = ({
               {/* PayPal Payment */}
               {!isPaid && paymentMethod === "Paypal" && (
                 <div>
-                  <PayPalScriptProvider options={{ clientId: paypalClientId }}>
-                    <PrintLoadingState />
-                    <PayPalButtons
-                      createOrder={handleCreatePayPalOrder}
-                      onApprove={handleApprovePayPalOrder}
-                    />
-                  </PayPalScriptProvider>
+                  {paypalClientId ? (
+                    <PayPalScriptProvider
+                      options={{ clientId: paypalClientId }}>
+                      <PrintLoadingState />
+                      <PayPalButtons
+                        createOrder={handleCreatePayPalOrder}
+                        onApprove={handleApprovePayPalOrder}
+                      />
+                    </PayPalScriptProvider>
+                  ) : (
+                    <div className='text-destructive p-4 border rounded'>
+                      PayPal is not configured. Please set
+                      NEXT_PUBLIC_PAYPAL_CLIENT_ID environment variable.
+                    </div>
+                  )}
                 </div>
               )}
               {/* Stripe Payment */}
